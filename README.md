@@ -1,5 +1,5 @@
 # IDEC
-# Official code of "Birds of A Feather Flock Together"
+# Official code of IDEC
 
 ### Inherit with Distillation and Evolve with Contrast: Exploring Class Incremental Semantic Segmentation without Exemplar Memory. *Under Review*, 2022.
 
