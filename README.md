@@ -4,6 +4,7 @@
 ### Inherit with Distillation and Evolve with Contrast: Exploring Class Incremental Semantic Segmentation without Exemplar Memory. *Under Review*, 2022.
 
 Danpei Zhao<sup>1,2*</sup>, Bo Yuan<sup>1,2</sup>,  Zhenwei Shi<sup>1</sup>.
+
 <sup>1</sup> <sub>Image Processing Center, BUAA</sub><br />
 <sup>2</sup> <sub>Airvic Lab</sub><br />
 
@@ -31,6 +32,8 @@ More on the way.
 ## Inference
 
 
+## License
+©2022 BoYuan *All Rights Reserved*
 
 
 
