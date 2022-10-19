@@ -1,6 +1,4 @@
 # IDEC
-# Official code of IDEC
-
 ### Inherit with Distillation and Evolve with Contrast: Exploring Class Incremental Semantic Segmentation without Exemplar Memory. *Under Review*, 2022.
 
 Danpei Zhao<sup>1,2*</sup>, Bo Yuan<sup>1,2</sup>,  Zhenwei Shi<sup>1</sup>.
