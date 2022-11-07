@@ -1,8 +1,9 @@
 '''
-@Author: HibiscusYB
-@Date: 2022-04-10 09:32:50 
-@Last Modified time: 2022-04-20 09:33:05
-'''
+ * @Author: YuanBo 
+ * @Date: 2022-05-07 19:07:31 
+ * @Last Modified by:   YuanBo 
+ * @Last Modified time: 2022-05-07 19:07:31 
+ '''
 
 ## contrastive learning during incremental steps
 ## metric learning + intra-class compactness and inter-class dispersion + Asymmetric Region-wise Contrastive Learning

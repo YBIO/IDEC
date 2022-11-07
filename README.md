@@ -29,7 +29,10 @@ Danpei Zhao<sup>1,2*</sup>, Bo Yuan<sup>1,2</sup>,  Zhenwei Shi<sup>1</sup>.
 More on the way.
 
 ## Inference
+```sh inference.sh```
 
+## Train
+```sh run.sh```
 
 ## License
 ©2022 BoYuan *All Rights Reserved*

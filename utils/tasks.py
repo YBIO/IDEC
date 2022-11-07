@@ -1,8 +1,9 @@
-"""
-SSUL
-Copyright (c) 2021-present NAVER Corp.
-MIT License
-"""
+'''
+ * @Author: YuanBo 
+ * @Date: 2022-05-07 19:07:31 
+ * @Last Modified by:   YuanBo 
+ * @Last Modified time: 2022-05-07 19:07:31 
+ '''
 
 tasks_voc = {
     "offline": {
