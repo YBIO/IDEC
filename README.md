@@ -7,7 +7,7 @@ Danpei Zhao<sup>1,2*</sup>, Bo Yuan<sup>1,2</sup>,  Zhenwei Shi<sup>1</sup>.
 <sup>2</sup> <sub>Airvic Lab</sub><br />
 
 
-### Update 2022-10-17
+### Update 2022-11-08
 
 ## pretrained models
 
