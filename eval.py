@@ -27,7 +27,6 @@ from utils.utils import AverageMeter
 from utils.tasks import get_tasks
 from utils.memory import memory_sampling_balanced
 from utils.color_palette import pascal_palette, ade_palette, ISPRS_palette
-from utils.visualize_feature import show_feature_map, draw_features
 
 from PIL import Image
 import matplotlib
@@ -49,9 +48,35 @@ def get_argparser():
 
     # Deeplab Options
     parser.add_argument("--model", type=str, default='deeplabv3plus_mobilenet',
-                        choices=['deeplabv3_resnet50',  'deeplabv3plus_resnet50',
-                                 'deeplabv3_resnet101', 'deeplabv3plus_resnet101',
-                                 'deeplabv3_mobilenet', 'deeplabv3plus_mobilenet'], help='model name')
+                        choices=['deeplabv3_resnet50', 'deeplabv3plus_resnet50',
+                                        'deeplabv3_resnet101', 'deeplabv3plus_resnet101',
+                                        'deeplabv3_mobilenet_v2_bubbliiiing', 'deeplabv3plus_mobilenet_v2_bubbliiiing',
+                                        'deeplabv3_mobilenet_v2', 'deeplabv3plus_mobilenet_v2',
+                                        'deeplabv3_mobilenet_v3_small', 'deeplabv3plus_mobilenet_v3_small',
+                                        'deeplabv3_mobilenet_v3_large', 'deeplabv3plus_mobilenet_v3_large',
+                                        'deeplabv3_mobilenet_v3_large_test', 'deeplabv3plus_mobilenet_v3_large_test',
+                                        'deeplabv3_berniwal_swintransformer_swin_t', 'deeplabv3plus_berniwal_swintransformer_swin_t',
+                                        'deeplabv3_berniwal_swintransformer_swin_s', 'deeplabv3plus_berniwal_swintransformer_swin_s',
+                                        'deeplabv3_berniwal_swintransformer_swin_b', 'deeplabv3plus_berniwal_swintransformer_swin_b',
+                                        'deeplabv3_berniwal_swintransformer_swin_l', 'deeplabv3plus_berniwal_swintransformer_swin_l',
+                                        'deeplabv3_microsoft_swintransformer_swin_t', 'deeplabv3plus_microsoft_swintransformer_swin_t',
+                                        'deeplabv3_microsoft_swintransformer_swin_s', 'deeplabv3plus_microsoft_swintransformer_swin_s',
+                                        'deeplabv3_microsoft_swintransformer_swin_b', 'deeplabv3plus_microsoft_swintransformer_swin_b',
+                                        'deeplabv3_microsoft_swintransformer_swin_l', 'deeplabv3plus_microsoft_swintransformer_swin_l',
+                                        'deeplabv3_hrnetv2_32', 'deeplabv3plus_hrnetv2_32',
+                                        'deeplabv3_hrnetv2_48', 'deeplabv3plus_hrnetv2_48',
+                                        'deeplabv3_xception', 'deeplabv3plus_xception',
+                                        'deeplabv3_regnet_y_400mf', 'deeplabv3plus_regnet_y_400mf',
+                                        'deeplabv3_regnet_y_8gf', 'deeplabv3plus_regnet_y_8gf',
+                                        'deeplabv3_regnet_y_32gf', 'deeplabv3plus_regnet_y_32gf',
+                                        'deeplabv3_vgg11_bn', 'deeplabv3plus_vgg11_bn',
+                                        'deeplabv3_vgg16_bn', 'deeplabv3plus_vgg16_bn',
+                                        'deeplabv3_vgg19_bn', 'deeplabv3plus_vgg19_bn',
+                                        'deeplabv3_shufflenet_v2_x0_5', 'deeplabv3plus_shufflenet_v2_x0_5',
+                                        'deeplabv3_shufflenet_v2_x1_0', 'deeplabv3plus_shufflenet_v2_x1_0',
+                                        'deeplabv3_ghostnet_v2_1_0', 'deeplabv3plus_ghostnet_v2_1_0',
+                                        'deeplabv3_ghostnet_v2_1_3', 'deeplabv3plus_ghostnet_v2_1_3',
+                                        'deeplabv3_ghostnet_v2_1_6', 'deeplabv3plus_ghostnet_v2_1_6'], help='model name')
     parser.add_argument("--separable_conv", action='store_true', default=False,
                         help="apply separable conv to decoder and aspp")
     parser.add_argument("--output_stride", type=int, default=16, choices=[8, 16])
@@ -201,19 +226,7 @@ def validate(opts, model, loader, device, metrics):
             images = images.to(device, dtype=torch.float32, non_blocking=True)
             labels = labels.to(device, dtype=torch.long, non_blocking=True)
             ret_features, outputs = model(images)
-           
-            ##===tsne-begin===
-            ##==make sure val_size=1
-            # feature_tsne = ret_features['feature_l3'].cpu().numpy() #[1,256,33,33] # outputs.cpu().numpy()
-            # # feature_tsne = np.resize(feature_tsne,(1,256,17,17))
-            # feature_tsne_save = feature_tsne.reshape(1, 256, -1).transpose(0,2,1)
-            # np.savetxt('tsne/ISPRS/feature_tsne/feature_tsne_%04d.csv'%(i+2401), feature_tsne_save[0], delimiter=' ')
-            # label_tsne = labels.cpu().numpy()
-            # # label_tsne =np.resize(label_tsne,(1,256,256)) # do not use np.resize, it changes image content(x_x)
-            # label_tsne = cv2.resize(label_tsne[0].astype(np.uint8), (feature_tsne.shape[-2],feature_tsne.shape[-1]))
-            # label_tsne = label_tsne.reshape(1,-1)
-            # np.savetxt('tsne/ISPRS/label_tsne/label_tsne_%04d.csv'%(i+2401), label_tsne[0], delimiter=' ')
-            ##===tsne-end===
+
          
             if opts.loss_type == 'bce_loss':
                 outputs = torch.sigmoid(outputs)
@@ -232,15 +245,6 @@ def validate(opts, model, loader, device, metrics):
             save_preds = BGR_to_RGB(save_preds)
             imsave('visualize_results/ade_100-5_step10/%08d.jpg'%(i+1), save_preds)
 
-            ###===save color labels
-            # temp0 = labels.cpu().numpy()
-            # # temp=cv2.resize(temp0[0].astype(np.uint8), (17,17))
-            # temp=temp0[0].astype(np.uint8)
-            # save_labels = convert_from_color_segmentation(temp) # BGR to RGB
-            # save_labels = BGR_to_RGB(save_labels)
-            # imsave('visualize_results/ade_color_labels/%08d.png'%(i+1), save_labels)
-            # assert False
-
             targets = labels.cpu().numpy()
             metrics.update(targets, preds)
                 
@@ -253,7 +257,7 @@ def main(opts):
     
     target_cls = get_tasks(opts.dataset, opts.task, opts.curr_step)
     opts.num_classes = [len(get_tasks(opts.dataset, opts.task, step)) for step in range(opts.curr_step+1)]
-    if opts.unknown: # [unknown, background, ...]
+    if opts.unknown: 
         opts.num_classes = [1, 1, opts.num_classes[0]-1] + opts.num_classes[1:]
     fg_idx = 1 if opts.unknown else 0
     
@@ -267,9 +271,6 @@ def main(opts):
     print("==============================================")
     print(f"  task : {opts.task}")
     print(f"  step : {opts.curr_step}")
-    print("  Device: %s" % device)
-    print( "  opts : ")
-    print(opts)
     print("==============================================")
 
     # Setup random seed
@@ -303,22 +304,14 @@ def main(opts):
     model = nn.DataParallel(model)
     mode = model.to(device)
 
-    ##===calculate model params===
-    # images = torch.rand(1,3,513,513)
-    # from torchstat import stat
-    # model = model.module.to(torch.device('cpu'))
-    # stat(model, (3,513,513))
-    # assert False
     
     dataset_dict = get_dataset(opts)
     test_loader = data.DataLoader(
         dataset_dict['test'], batch_size=opts.val_batch_size, shuffle=False, num_workers=4, pin_memory=True)
     
-    print("... Testing Best Model")
+    print("... Testing ...")
     report_dict = dict()
-    # best_ckpt = ckpt_str % (opts.model, opts.dataset, opts.task, 0)
     best_ckpt = ckpt_str % (opts.model, opts.dataset, opts.task, opts.curr_step)
-    print('best_ckpt:', best_ckpt)
     checkpoint = torch.load(best_ckpt, map_location=torch.device('cpu'))
     model.module.load_state_dict(checkpoint["model_state"], strict=True)
     model.eval()
@@ -338,18 +331,15 @@ def main(opts):
     report_dict[f'best/test_before_acc'] = np.mean(class_acc[:first_cls])  
     report_dict[f'best/test_after_acc'] = np.mean(class_acc[first_cls:])  
 
-    print(f"...from 0 to {first_cls-1} : best/test_before_mIoU : %.6f" % np.mean(class_iou[:first_cls]))
-    print(f"...from {first_cls} to {len(class_iou)-1} best/test_after_mIoU : %.6f" % np.mean(class_iou[first_cls:]))
-    print(f"...from 0 to {first_cls-1} : best/test_before_acc : %.6f" % np.mean(class_acc[:first_cls]))
-    print(f"...from {first_cls} to {len(class_iou)-1} best/test_after_acc : %.6f" % np.mean(class_acc[first_cls:]))
+    print(f"class 0 to {first_cls-1} : mIoU : %.6f" % np.mean(class_iou[:first_cls]))
+    print(f"class {first_cls} to {len(class_iou)-1} mIoU : %.6f" % np.mean(class_iou[first_cls:]))
+    print(f"class 0 to {first_cls-1} : accuracy : %.6f" % np.mean(class_acc[:first_cls]))
+    print(f"class {first_cls} to {len(class_iou)-1} accuracy : %.6f" % np.mean(class_acc[first_cls:]))
 
 
-if __name__ == '__main__':
-            
+if __name__ == '__main__':       
     opts = get_argparser().parse_args()
-        
     total_step = len(get_tasks(opts.dataset, opts.task))
-    # opts.curr_step = 0
     opts.curr_step = total_step-1
     main(opts)
 
