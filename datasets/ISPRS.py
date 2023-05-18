@@ -1,10 +1,3 @@
-'''
- * @Author: YuanBo 
- * @Date: 2022-05-07 19:07:31 
- * @Last Modified by:   YuanBo 
- * @Last Modified time: 2022-05-07 19:07:31 
- '''
-
 import os
 import sys
 import torch.utils.data as data
@@ -22,7 +15,7 @@ classes = {
         'Low vegetation',
         'Tree',
         'Car',
-        'Clutter'
+        'Background'
 }
 
 
@@ -59,7 +52,7 @@ class ISPRSSegmentation(data.Dataset):
         self.image_set = image_set
         self.transform = transform
         
-        ISPRS_root = './datasets/data/ISPRS'
+        ade_root = './datasets/data/ISPRS_2D/postdam_Incremental_RGB_1000'
         
         if self.image_set == 'train' or self.image_set == 'memory':
             split = 'training'
@@ -71,18 +64,18 @@ class ISPRSSegmentation(data.Dataset):
         
         assert os.path.exists(mask_dir), "annotations not found"
             
-        self.target_cls = get_tasks('ISPRS', self.task, cil_step)
+        self.target_cls = get_tasks('ade', self.task, cil_step)
         self.target_cls += [255] # including ignore index (255)
             
         if image_set=='test':
-            file_names = open(os.path.join(ISPRS_root, 'val.txt'), 'r')
+            file_names = open(os.path.join(ade_root, 'val.txt'), 'r')
             file_names = file_names.read().splitlines()
             
         elif image_set == 'memory':
             for s in range(cil_step):
-                self.target_cls += get_tasks('ISPRS', self.task, s)
+                self.target_cls += get_tasks('ade', self.task, s)
             
-            memory_json = os.path.join(ISPRS_root, 'memory.json')
+            memory_json = os.path.join(ade_root, 'memory.json')
 
             with open(memory_json, "r") as json_file:
                 memory_list = json.load(json_file)
@@ -94,14 +87,14 @@ class ISPRSSegmentation(data.Dataset):
                 file_names = file_names * 2
                 
         else:
-            file_names = get_dataset_list('ISPRS', self.task, cil_step, image_set, self.overlap)
+            file_names = get_dataset_list('ade', self.task, cil_step, image_set, self.overlap)
 
         self.images = [os.path.join(image_dir, x + ".png") for x in file_names]
         self.masks = [os.path.join(mask_dir, x + ".png") for x in file_names]
         self.file_names = file_names
         
         # class re-ordering
-        all_steps = get_tasks('ISPRS', self.task)
+        all_steps = get_tasks('ade', self.task)
         all_classes = []
         for i in range(len(all_steps)):
             all_classes += all_steps[i]
@@ -122,14 +115,13 @@ class ISPRSSegmentation(data.Dataset):
         
         img = Image.open(self.images[index]).convert('RGB')
         target = Image.open(self.masks[index])
-        # sal_map is useless 
-        sal_map = Image.fromarray(np.ones(target.size[::-1], dtype=np.uint8))
+
         
         # re-define target label according to the CIL case
         target = self.gt_label_mapping(target)
         
         if self.transform is not None:
-            img, target, sal_map = self.transform(img, target, sal_map)
+            img, target = self.transform(img, target)
         
         # add unknown label, background index: 0 -> 1, unknown index: 0
         if self.image_set == 'train' and self.unknown:
@@ -141,7 +133,7 @@ class ISPRSSegmentation(data.Dataset):
             unknown_area = (target == 1)
             target = torch.where(unknown_area, torch.zeros_like(target), target)
 
-        return img, target.long(), sal_map, file_name
+        return img, target.long(), file_name
 
 
     def __len__(self):
@@ -160,6 +152,4 @@ class ISPRSSegmentation(data.Dataset):
     def decode_target(cls, mask):
         """decode semantic mask to RGB image"""
         return cls.cmap[mask]
-
-
 

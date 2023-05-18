@@ -1,9 +1,8 @@
-'''
- * @Author: YuanBo 
- * @Date: 2022-05-07 19:07:31 
- * @Last Modified by:   YuanBo 
- * @Last Modified time: 2022-05-07 19:07:31 
- '''
+"""
+SSUL
+Copyright (c) 2021-present NAVER Corp.
+MIT License
+"""
 
 import os
 import sys
@@ -279,14 +278,13 @@ class ADESegmentation(data.Dataset):
         
         img = Image.open(self.images[index]).convert('RGB')
         target = Image.open(self.masks[index])
-        # sal_map is useless for ADE20K
-        sal_map = Image.fromarray(np.ones(target.size[::-1], dtype=np.uint8))
+
         
         # re-define target label according to the CIL case
         target = self.gt_label_mapping(target)
         
         if self.transform is not None:
-            img, target, sal_map = self.transform(img, target, sal_map)
+            img, target = self.transform(img, target)
         
         # add unknown label, background index: 0 -> 1, unknown index: 0
         if self.image_set == 'train' and self.unknown:
@@ -298,7 +296,7 @@ class ADESegmentation(data.Dataset):
             unknown_area = (target == 1)
             target = torch.where(unknown_area, torch.zeros_like(target), target)
 
-        return img, target.long(), sal_map, file_name
+        return img, target.long(), file_name
 
 
     def __len__(self):
