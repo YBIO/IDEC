@@ -1,4 +1,5 @@
 <img src="illustration/AIRVIC.png" width="100px">
+
 # IDEC
 ### Inherit with Distillation and Evolve with Contrast: Exploring Class Incremental Semantic Segmentation without Exemplar Memory. 2023.
 
