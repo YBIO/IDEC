@@ -42,6 +42,18 @@ More on the way.
 ## Train
 ```sh run.sh```
 
+## Citation
+```
+@ARTICLE{10120962,
+  author={Zhao, Danpei and Yuan, Bo and Shi, Zhenwei},
+  journal={IEEE Transactions on Pattern Analysis and Machine Intelligence}, 
+  title={Inherit With Distillation and Evolve With Contrast: Exploring Class Incremental Semantic Segmentation Without Exemplar Memory}, 
+  year={2023},
+  volume={},
+  number={},
+  pages={1-16},
+  doi={10.1109/TPAMI.2023.3273574}}
+```
 ## License
 ©2022 Airvic *All Rights Reserved*
 
