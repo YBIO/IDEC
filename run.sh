@@ -1,7 +1,7 @@
 # ISPRS
 DATA_ROOT=dataset/ISPRS_2D/postdam/Incremental_RGB_600
 DATASET=ISPRS
-TASK=2-2-1 #[4-1, 2-3, 2-2-1, 2-1, offline]
+TASK=2-2-1 
 EPOCH=30
 BATCH=12
 LOSS=bce_loss
