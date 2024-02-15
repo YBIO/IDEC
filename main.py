@@ -114,18 +114,15 @@ def get_dataset(opts):
             et.ExtToTensor(),
             et.ExtNormalize(mean=[0.485, 0.456, 0.406],
                             std=[0.229, 0.224, 0.225])])    
-
     if opts.dataset == 'ISPRS':
         dataset = ISPRSSegmentation
     dataset_dict = {}
     dataset_dict['train'] = dataset(opts=opts, image_set='train', transform=train_transform, cil_step=opts.curr_step)
     dataset_dict['val'] = dataset(opts=opts,image_set='val', transform=val_transform, cil_step=opts.curr_step)
     dataset_dict['test'] = dataset(opts=opts, image_set='test', transform=val_transform, cil_step=opts.curr_step)
-    
     if opts.curr_step > 0 and opts.mem_size > 0:
         dataset_dict['memory'] = dataset(opts=opts, image_set='memory', transform=train_transform, 
                                                  cil_step=opts.curr_step, mem_size=opts.mem_size)
-
     return dataset_dict
 
 def validate(opts, model, loader, device, metrics):
@@ -167,7 +164,6 @@ def main(opts):
     torch.manual_seed(opts.random_seed)
     np.random.seed(opts.random_seed)
     random.seed(opts.random_seed)
-    
     model_map = {
         'deeplabv3_resnet101': network.deeplabv3_resnet101,
     }
@@ -213,7 +209,6 @@ def main(opts):
             "optimizer_state": optimizer.state_dict(),
             "best_score": best_score,
         }, path)
-
     utils.mkdir('checkpoints')
     best_score = -1
     cur_itrs = 0
@@ -243,7 +238,6 @@ def main(opts):
         del checkpoint 
     else:
         pass
-
     model = nn.DataParallel(model)
     mode = model.to(device)
     mode.train()
@@ -407,7 +401,6 @@ def main(opts):
             if curr_score > best_score: 
                 best_score = curr_score
                 save_ckpt(ckpt_str % (opts.model, opts.dataset, opts.task, opts.curr_step))
-    
     if opts.curr_step > 0:
         best_ckpt = ckpt_str % (opts.model, opts.dataset, opts.task, opts.curr_step)
         checkpoint = torch.load(best_ckpt, map_location=torch.device('cpu'))
