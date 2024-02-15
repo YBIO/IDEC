@@ -1,7 +1,7 @@
 '''
- * @Author: YuanBo 
+ * @Author: YBIO
  * @Date: 2022-05-07 19:07:31 
- * @Last Modified by:   YuanBo 
+ * @Last Modified by:   YBIO 
  * @Last Modified time: 2022-05-07 19:07:31 
  '''
 import torch.nn as nn
