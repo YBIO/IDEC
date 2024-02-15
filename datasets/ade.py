@@ -1,9 +1,3 @@
-"""
-SSUL
-Copyright (c) 2021-present NAVER Corp.
-MIT License
-"""
-
 import os
 import sys
 import torch.utils.data as data
@@ -228,7 +222,7 @@ class ADESegmentation(data.Dataset):
         assert os.path.exists(mask_dir), "annotations not found"
             
         self.target_cls = get_tasks('ade', self.task, cil_step)
-        self.target_cls += [255] # including ignore index (255)
+        self.target_cls += [255]
             
         if image_set=='test':
             file_names = open(os.path.join(ade_root, 'val.txt'), 'r')
@@ -244,7 +238,7 @@ class ADESegmentation(data.Dataset):
                 memory_list = json.load(json_file)
 
             file_names = memory_list[f"step_{cil_step}"]["memory_list"]
-            print("... memory list : ", len(file_names), self.target_cls)
+
             
             while len(file_names) < opts.batch_size:
                 file_names = file_names * 2
@@ -256,7 +250,7 @@ class ADESegmentation(data.Dataset):
         self.masks = [os.path.join(mask_dir, x + ".png") for x in file_names]
         self.file_names = file_names
         
-        # class re-ordering
+
         all_steps = get_tasks('ade', self.task)
         all_classes = []
         for i in range(len(all_steps)):
@@ -279,19 +273,17 @@ class ADESegmentation(data.Dataset):
         img = Image.open(self.images[index]).convert('RGB')
         target = Image.open(self.masks[index])
 
-        
-        # re-define target label according to the CIL case
+ 
         target = self.gt_label_mapping(target)
         
         if self.transform is not None:
             img, target = self.transform(img, target)
         
-        # add unknown label, background index: 0 -> 1, unknown index: 0
         if self.image_set == 'train' and self.unknown:
             
             target = torch.where(target == 255, 
-                                 torch.zeros_like(target) + 255,  # keep 255 (uint8)
-                                 target+1) # unknown label
+                                 torch.zeros_like(target) + 255,  
+                                 target+1) 
             
             unknown_area = (target == 1)
             target = torch.where(unknown_area, torch.zeros_like(target), target)
@@ -313,6 +305,4 @@ class ADESegmentation(data.Dataset):
     
     @classmethod
     def decode_target(cls, mask):
-        """decode semantic mask to RGB image"""
         return cls.cmap[mask]
-

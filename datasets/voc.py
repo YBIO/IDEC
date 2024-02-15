@@ -1,9 +1,3 @@
-"""
-SSUL
-Copyright (c) 2021-present NAVER Corp.
-MIT License
-"""
-
 import os
 import sys
 import torch.utils.data as data
@@ -32,9 +26,9 @@ def voc_cmap(N=256, normalized=False):
 
         cmap[i] = np.array([r, g, b])
 
-    cmap[254] = np.array([0, 0, 0])       # bg
-    cmap[255] = np.array([0, 0, 0])       # bg
-    cmap[200] = np.array([192, 192, 192])       # unknown
+    cmap[254] = np.array([0, 0, 0])       
+    cmap[255] = np.array([0, 0, 0])       
+    cmap[200] = np.array([192, 192, 192])       
     cmap = cmap/255 if normalized else cmap
     return cmap
 
@@ -63,10 +57,10 @@ class VOCSegmentation(data.Dataset):
             raise RuntimeError('Dataset not found or corrupted.')
         
         mask_dir = os.path.join(self.root, 'SegmentationClassAug')
-        assert os.path.exists(mask_dir), "SegmentationClassAug not found, please refer to README.md and prepare it manually"
+        assert os.path.exists(mask_dir), "SegmentationClassAug not found"
             
         self.target_cls = get_tasks('voc', self.task, cil_step)
-        self.target_cls += [255] # including ignore index (255)
+        self.target_cls += [255] 
         
         if image_set=='test':
             file_names = open(os.path.join(self.root, 'ImageSets/Segmentation', 'val.txt'), 'r')
@@ -82,7 +76,6 @@ class VOCSegmentation(data.Dataset):
                 memory_list = json.load(json_file)
 
             file_names = memory_list[f"step_{cil_step}"]["memory_list"]
-            print("... memory list : ", len(file_names), self.target_cls)
             
             while len(file_names) < opts.batch_size:
                 file_names = file_names * 2
@@ -94,7 +87,6 @@ class VOCSegmentation(data.Dataset):
         self.masks = [os.path.join(mask_dir, x + ".png") for x in file_names]
         self.file_names = file_names
         
-        # class re-ordering
         all_steps = get_tasks('voc', self.task)
         all_classes = []
         for i in range(len(all_steps)):
@@ -118,17 +110,15 @@ class VOCSegmentation(data.Dataset):
         img = Image.open(self.images[index]).convert('RGB')
         target = Image.open(self.masks[index])
      
-        # re-define target label according to the CIL case
         target = self.gt_label_mapping(target)
         
         if self.transform is not None:
             img, target= self.transform(img, target)
         
-        # add unknown label, background index: 0 -> 1, unknown index: 0
         if self.image_set == 'train' and self.unknown:
             target = torch.where(target == 255, 
-                                 torch.zeros_like(target) + 255,  # keep 255 (uint8)
-                                 target+1) # unknown label
+                                 torch.zeros_like(target) + 255, 
+                                 target+1)
 
             unknown_area = (target == 1)
             target = torch.where(unknown_area, torch.zeros_like(target), target)
@@ -150,6 +140,4 @@ class VOCSegmentation(data.Dataset):
     
     @classmethod
     def decode_target(cls, mask):
-        """decode semantic mask to RGB image"""
         return cls.cmap[mask]
-

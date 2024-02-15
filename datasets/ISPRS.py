@@ -52,7 +52,7 @@ class ISPRSSegmentation(data.Dataset):
         self.image_set = image_set
         self.transform = transform
         
-        ade_root = './datasets/data/ISPRS_2D/postdam_Incremental_RGB_1000'
+        ISPRS_root =  './datasets/data/ISPRS'
         
         if self.image_set == 'train' or self.image_set == 'memory':
             split = 'training'
@@ -64,37 +64,35 @@ class ISPRSSegmentation(data.Dataset):
         
         assert os.path.exists(mask_dir), "annotations not found"
             
-        self.target_cls = get_tasks('ade', self.task, cil_step)
-        self.target_cls += [255] # including ignore index (255)
+        self.target_cls = get_tasks('ISPRS', self.task, cil_step)
+        self.target_cls += [255] 
             
         if image_set=='test':
-            file_names = open(os.path.join(ade_root, 'val.txt'), 'r')
+            file_names = open(os.path.join(ISPRS_root, 'val_vaihingen.txt'), 'r')
             file_names = file_names.read().splitlines()
             
         elif image_set == 'memory':
             for s in range(cil_step):
-                self.target_cls += get_tasks('ade', self.task, s)
+                self.target_cls += get_tasks('ISPRS', self.task, s)
             
-            memory_json = os.path.join(ade_root, 'memory.json')
+            memory_json = os.path.join(ISPRS_root, 'memory.json')
 
             with open(memory_json, "r") as json_file:
                 memory_list = json.load(json_file)
 
             file_names = memory_list[f"step_{cil_step}"]["memory_list"]
-            print("... memory list : ", len(file_names), self.target_cls)
             
             while len(file_names) < opts.batch_size:
                 file_names = file_names * 2
                 
         else:
-            file_names = get_dataset_list('ade', self.task, cil_step, image_set, self.overlap)
+            file_names = get_dataset_list('ISPRS', self.task, cil_step, image_set, self.overlap)
 
         self.images = [os.path.join(image_dir, x + ".png") for x in file_names]
         self.masks = [os.path.join(mask_dir, x + ".png") for x in file_names]
         self.file_names = file_names
         
-        # class re-ordering
-        all_steps = get_tasks('ade', self.task)
+        all_steps = get_tasks('ISPRS', self.task)
         all_classes = []
         for i in range(len(all_steps)):
             all_classes += all_steps[i]
@@ -117,18 +115,16 @@ class ISPRSSegmentation(data.Dataset):
         target = Image.open(self.masks[index])
 
         
-        # re-define target label according to the CIL case
         target = self.gt_label_mapping(target)
         
         if self.transform is not None:
             img, target = self.transform(img, target)
         
-        # add unknown label, background index: 0 -> 1, unknown index: 0
         if self.image_set == 'train' and self.unknown:
             
             target = torch.where(target == 255, 
-                                 torch.zeros_like(target) + 255,  # keep 255 (uint8)
-                                 target+1) # unknown label
+                                 torch.zeros_like(target) + 255, 
+                                 target+1) 
             
             unknown_area = (target == 1)
             target = torch.where(unknown_area, torch.zeros_like(target), target)
@@ -150,6 +146,5 @@ class ISPRSSegmentation(data.Dataset):
     
     @classmethod
     def decode_target(cls, mask):
-        """decode semantic mask to RGB image"""
         return cls.cmap[mask]
 
