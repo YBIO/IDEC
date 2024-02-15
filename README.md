@@ -32,10 +32,10 @@
 More on the way.
 
 ## Inference
-```sh inference.sh```
+```python eval.py```
 
 ## Train
-```sh run.sh```
+```python main.py```
 
 ## Citation
 ```
