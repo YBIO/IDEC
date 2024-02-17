@@ -28,69 +28,48 @@ torch.backends.cudnn.benchmark = True
 
 def get_argparser():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--data_root", type=str, default='/data/',
-                        help="path to Dataset")
-    parser.add_argument("--dataset", type=str, default='ISPRS', help='Name of dataset')
-    parser.add_argument("--num_classes", type=int, default=None, help="num classes (default: None)")
-    parser.add_argument("--model", type=str, default='deeplabv3_resnet101',
-                        help='model name')
-    parser.add_argument("--separable_conv", action='store_true', default=False,
-                        help="apply separable conv to decoder and aspp")
+    parser.add_argument("--data_root", type=str, default='/data/'")
+    parser.add_argument("--dataset", type=str, default='ISPRS'')
+    parser.add_argument("--num_classes", type=int, default=None")
+    parser.add_argument("--model", type=str, default='deeplabv3_resnet101')
+    parser.add_argument("--separable_conv", action='store_true', default=False")
     parser.add_argument("--output_stride", type=int, default=16)
     parser.add_argument("--cutout", action="store_true", default=False)
     parser.add_argument("--cutmix", action="store_true", default=False)
     parser.add_argument("--mixup", action="store_true", default=False)
     parser.add_argument("--amp", action='store_true', default=False)
     parser.add_argument("--test_only", action='store_true', default=False)
-    parser.add_argument("--train_epoch", type=int, default=50,
-                        help="epoch number")
+    parser.add_argument("--train_epoch", type=int, default=50")
     parser.add_argument("--curr_itrs", type=int, default=0)
-    parser.add_argument("--lr", type=float, default=0.01,
-                        help="learning rate (default: 0.01)")
-    parser.add_argument("--lr_policy", type=str, default='warm_poly',
-                        help="learning rate scheduler")
+    parser.add_argument("--lr", type=float, default=0.01")
+    parser.add_argument("--lr_policy", type=str, default='warm_poly'")
     parser.add_argument("--step_size", type=int, default=10000)
-    parser.add_argument("--crop_val", action='store_true', default=False,
-                        help='crop validation (default: False)')
-    parser.add_argument("--batch_size", type=int, default=32,
-                        help='batch size (default: 16)')
-    parser.add_argument("--val_batch_size", type=int, default=4,
-                        help='batch size for validation (default: 4)')
+    parser.add_argument("--crop_val", action='store_true', default=False')
+    parser.add_argument("--batch_size", type=int, default=32')
+    parser.add_argument("--val_batch_size", type=int, default=4')
     parser.add_argument("--crop_size", type=int, default=513)
-    parser.add_argument("--ckpt", default=None, type=str,
-                        help="restore from checkpoint")
-    parser.add_argument("--loss_type", type=str, default='bce_loss',
-                        help="loss type")
-    parser.add_argument("--KD_loss_type", type=str, default='KLDiv_loss',
-                        help="KD loss type for ret features")
-    parser.add_argument("--use_KD_layer_weight", action='store_true', default=False,
-                        help='Whether to apply layer weight for ret feature distillation (default: False)')
-    parser.add_argument("--KD_outlogits", action='store_true', default=False,
-                        help='Whether to distillation output between old model prediction and new model prediction')
-    parser.add_argument("--use_KD_class_weight", action='store_true', default=False,
-                        help='Whether to apply class weight for ret feature distillation (default: False)')     
-    parser.add_argument('--lamb', type=float, default=1.0, help="initial weight for weight decay")               
-    parser.add_argument("--gpu_id", type=str, default='0',
-                        help="GPU ID")
-    parser.add_argument("--weight_decay", type=float, default=1e-4,
-                        help='weight decay (default: 1e-4)')
-    parser.add_argument("--random_seed", type=int, default=1,
-                        help="random seed (default: 1)")
-    parser.add_argument("--print_interval", type=int, default=20,
-                        help="print interval of loss (default: 10)")
-    parser.add_argument("--val_interval", type=int, default=200,
-                        help="epoch interval for eval (default: 100)")
-    parser.add_argument("--pseudo", action='store_true', help="enable pseudo-labeling")
-    parser.add_argument("--pseudo_thresh", type=float, default=0.7, help="confidence threshold for pseudo-labeling")
-    parser.add_argument("--task", type=str, default='15-1', help="cil task")
-    parser.add_argument("--curr_step", type=int, default=0)
-    parser.add_argument("--overlap", action='store_true', help="overlap setup")
-    parser.add_argument("--mem_size", type=int, default=0, help="size of examplar memory")
-    parser.add_argument("--freeze", action='store_true', help="enable network freezing")
-    parser.add_argument("--bn_freeze", action='store_true', help="enable batchnorm freezing")
-    parser.add_argument("--w_transfer", action='store_true', help="enable weight transfer")
-    parser.add_argument("--unknown", action='store_true', help="enable unknown modeling")
-    parser.add_argument("--contrastive_learning", action='store_true', help="enable contrastive learning during CIL")
+    parser.add_argument("--ckpt", default=None, type=str)
+    parser.add_argument("--loss_type", type=str, default='bce_loss')
+    parser.add_argument("--KD_loss_type", type=str, default='KLDiv_loss')
+    parser.add_argument("--use_KD_layer_weight", action='store_true', default=False')
+    parser.add_argument("--KD_outlogits", action='store_true', default=False')
+    parser.add_argument("--use_KD_class_weight", action='store_true', default=False')     
+    parser.add_argument('--lamb', type=float, default=1.0")               
+    parser.add_argument("--gpu_id", type=str, default='0'")
+    parser.add_argument("--weight_decay", type=float, default=1e-4')
+    parser.add_argument("--random_seed", type=int, default=1")
+    parser.add_argument("--print_interval", type=int, default=20")
+    parser.add_argument("--val_interval", type=int, default=200")
+    parser.add_argument("--pseudo", action='store_true'")
+    parser.add_argument("--pseudo_thresh", type=float, default=0.7)
+    parser.add_argument("--task", type=str, default='15-1')
+    parser.add_argument("--curr_step", type=int)
+    parser.add_argument("--overlap", action='store_true')
+    parser.add_argument("--freeze", action='store_true')
+    parser.add_argument("--bn_freeze", action='store_true')
+    parser.add_argument("--w_transfer", action='store_true')
+    parser.add_argument("--unknown", action='store_true')
+    parser.add_argument("--contrastive_learning", action='store_true')
 
     return parser
 
@@ -120,9 +99,6 @@ def get_dataset(opts):
     dataset_dict['train'] = dataset(opts=opts, image_set='train', transform=train_transform, cil_step=opts.curr_step)
     dataset_dict['val'] = dataset(opts=opts,image_set='val', transform=val_transform, cil_step=opts.curr_step)
     dataset_dict['test'] = dataset(opts=opts, image_set='test', transform=val_transform, cil_step=opts.curr_step)
-    if opts.curr_step > 0 and opts.mem_size > 0:
-        dataset_dict['memory'] = dataset(opts=opts, image_set='memory', transform=train_transform, 
-                                                 cil_step=opts.curr_step, mem_size=opts.mem_size)
     return dataset_dict
 
 def validate(opts, model, loader, device, metrics):
@@ -245,8 +221,6 @@ def main(opts):
         model_prev = nn.DataParallel(model_prev)
         model_prev = model_prev.to(device)
         model_prev.eval()
-        if opts.mem_size > 0:
-            memory_sampling_balanced(opts, model_prev)    
     if not opts.crop_val:
         opts.val_batch_size = 1
     
@@ -257,9 +231,6 @@ def main(opts):
         dataset_dict['val'], batch_size=opts.val_batch_size, shuffle=False, num_workers=4, pin_memory=True)
     test_loader = data.DataLoader(
         dataset_dict['test'], batch_size=opts.val_batch_size, shuffle=False, num_workers=4, pin_memory=True)
-    if opts.curr_step > 0 and opts.mem_size > 0:
-        memory_loader = data.DataLoader(
-            dataset_dict['memory'], batch_size=opts.batch_size, shuffle=True, num_workers=4, pin_memory=True, drop_last=True)
     total_itrs = opts.train_epoch * len(train_loader)
     val_interval = max(100, total_itrs // 100)
     if opts.test_only:
@@ -283,8 +254,7 @@ def main(opts):
     elif opts.loss_type == 'ce_loss':
         criterion = nn.CrossEntropyLoss(ignore_index=255, reduction='mean')
     elif opts.loss_type == 'bce_loss':
-        criterion = utils.BCEWithLogitsLossWithIgnoreIndex(ignore_index=255, 
-                                                           reduction='mean')
+        criterion = utils.BCEWithLogitsLossWithIgnoreIndex(ignore_index=255, reduction='mean')
     else:
         raise NotImplementedError
     if opts.KD_loss_type == 'KLDiv_loss':
@@ -309,7 +279,6 @@ def main(opts):
     CL_loss = torch.tensor(0.)
     model.train()
     save_ckpt(ckpt_str % (opts.model, opts.dataset, opts.task, opts.curr_step))
-
     while cur_itrs < total_itrs:
         cur_itrs += 1
         optimizer.zero_grad()
@@ -331,25 +300,13 @@ def main(opts):
             for i in range(opts.batch_size):
                 images[i] = cutout_func(images[i])
                 labels[i] = cutout_func(labels[i])
-        if opts.curr_step > 0 and opts.mem_size > 0:
-            try:
-                m_images, m_labels, _, _ = mem_iter.next()
-            except:
-                mem_iter = iter(memory_loader)
-                m_images, m_labels, _, _ = mem_iter.next()
-            m_images = m_images.to(device, dtype=torch.float32, non_blocking=True)
-            m_labels = m_labels.to(device, dtype=torch.long, non_blocking=True)
-            rand_index = torch.randperm(opts.batch_size)[:opts.batch_size // 2].cuda()
-            images[rand_index, ...] = m_images[rand_index, ...]
-            labels[rand_index, ...] = m_labels[rand_index, ...]
         with torch.cuda.amp.autocast(enabled=opts.amp):
             ret_features, outputs = model(images) 
             if model_prev is not None and opts.curr_step>0:
                 with torch.no_grad():
                     ret_features_prev, outputs_prev = model_prev(images)
                 if opts.contrastive_learning:
-                    CL_loss = class_contrastive_learning(outputs, ret_features['feature_out'], outputs_prev, ret_features_prev['feature_out'], \
-                                                            num_classes=20)
+                    CL_loss = class_contrastive_learning(outputs, ret_features['feature_out'], outputs_prev, ret_features_prev['feature_out'], \num_classes=20)
                 lamb = math.pow(opts.lamb, (cur_epochs/opts.train_epoch))
                 if opts.use_KD_layer_weight:
                     KD_loss_ret_l1 = KD_layer_weight['l1'] * lamb * criterion_KD(ret_features['feature_l1'], ret_features_prev['feature_l1'])
@@ -384,10 +341,6 @@ def main(opts):
         avg_loss.update(loss.item())
         avg_time.update(time.time() - end_time)
         end_time = time.time()
-        if (cur_itrs) % 50 == 0:
-            print("[Step %d] Epoch %d, Iters %d/%d, Loss=%6f, Time=%.2f , LR=%.8f" %
-                  (opts.curr_step, cur_epochs, cur_itrs, total_itrs, 
-                   avg_loss.avg,  avg_time.avg*1000, optimizer.param_groups[0]['lr']))
         if val_interval > 0 and (cur_itrs) % val_interval == 0:
             model.eval()
             val_score = validate(opts=opts, model=model, loader=val_loader, 
